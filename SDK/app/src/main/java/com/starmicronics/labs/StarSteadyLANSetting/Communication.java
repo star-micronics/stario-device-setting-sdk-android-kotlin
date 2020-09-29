@@ -201,10 +201,10 @@ class SteadyLANSettingThread extends Thread {
                     boolean receiveResponse = false;
 
                     //Check the steadyLAN setting value
-                    // When the remote config setting is SteadyLAN(DISABLE), the following format is transmitted.
-                    //   0x1b 0x1d 0x29 0x4e 0x02 0x00 0x49 0x01 0x00 0x0a 0x00
-                    // When the remote config setting is SteadyLAN(for iOS), the following format is transmitted.
-                    //   0x1b 0x1d 0x29 0x4e 0x02 0x00 0x49 0x01 0x01 0x0a 0x00
+                    //The following format is transmitted.
+                    //  0x1b 0x1d 0x29 0x4e 0x02 0x00 0x49 0x01 [n] 0x0a 0x00
+                    //The value of [n] indicates the SteadyLAN setting.
+                    //  0x00: Invalid, 0x01: Valid(For iOS), 0x02: Valid(For Android), 0x03: Valid(For Windows)
                     if (receiveData.length >= 11){
                         for (int i = 0; i < receiveData.length; i++){
                             if (receiveData[i + 0] == 0x1b &&
@@ -219,11 +219,20 @@ class SteadyLANSettingThread extends Thread {
                                     receiveData[i + 9] == 0x0a &&
                                     receiveData[i + 10] == 0x00) {
 
-                                if (receiveData[i + 8] == 0x01){
-                                    message = "SteadyLAN(for iOS).";
-                                }
-                                else{ //receiveData[i + 8] == 0x00
-                                    message = "SteadyLAN(Disable).";
+                                switch (receiveData[i + 8]) {
+                                //  case 0x00:
+                                    default:
+                                        message = "SteadyLAN(Disable).";
+                                        break;
+                                    case 0x01:
+                                        message = "SteadyLAN(for iOS).";
+                                        break;
+                                    case 0x02:
+                                        message = "SteadyLAN(for Android).";
+                                        break;
+                                    case 0x03:
+                                        message = "SteadyLAN(for Windows).";
+                                        break;
                                 }
 
                                 receiveResponse = true;

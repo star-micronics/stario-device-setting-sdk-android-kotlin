@@ -2,6 +2,6 @@
 <resources>
     <string-array name="spinner_values">
         <item>Disable</item>
-        <item>Enable(for iOS)</item>
+        <item>Enable</item>
      </string-array>
 </resources>
